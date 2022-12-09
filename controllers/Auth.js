@@ -73,13 +73,8 @@ export const Login = async (req, res) => {
         // Save refresh token to cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
+            secure: true,
             maxAge: 24 * 60 * 60 * 1000
-        });
-
-        // Save access token to cookie
-        res.cookie('accessToken', accessToken, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 15
         });
 
         // Send access token back to user as response
@@ -140,41 +135,17 @@ export const RefreshAccessToken = async (req, res) => {
 
         if (!session) return res.status(401).json({ msg: 'Invalid token.' });
 
-        // const user = await User.findOne({
-        //     where: {
-        //         uuid: session.uuid
-        //     }
-        // });
-
-        // This could only happen if logged in user was
-        // deleted by administrator (from DB)
-        // if (!user) return res.status(404).json({ msg: 'User does not exists.' });
+        if (session.revoked === true) return res.status(401).json({ msg: 'Token revoked.' });
 
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
             if (err) return res.sendStatus(403);
 
-            // const payload = {
-            //     id: user.id,
-            //     uuid: user.uuid,
-            //     email: user.email,
-            //     firstName: user.first_name,
-            //     lastName: user.last_name
-            // };
-
             const payload = decoded;
-
             const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
                 expiresIn: '15m'
             });
 
-            // Good idea is to implement heartbeat
-            // => update value in UserSession table
-            // to set "updatedAt" value and other
-            // users can see wheher user is still online
-            // or not (last access token update)
             HeartbeatFunction(uuid);
-
-            // == IMPLEMENTED
 
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
