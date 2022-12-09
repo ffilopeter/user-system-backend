@@ -131,26 +131,28 @@ export const RefreshAccessToken = async (req, res) => {
 
         if (!session) return res.status(401).json({ msg: 'Invalid token.' });
 
-        const user = await User.findOne({
-            where: {
-                uuid: session.uuid
-            }
-        });
+        // const user = await User.findOne({
+        //     where: {
+        //         uuid: session.uuid
+        //     }
+        // });
 
         // This could only happen if logged in user was
         // deleted by administrator (from DB)
-        if (!user) return res.status(404).json({ msg: 'User does not exists.' });
+        // if (!user) return res.status(404).json({ msg: 'User does not exists.' });
 
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
             if (err) return res.sendStatus(403);
 
-            const payload = {
-                id: user.id,
-                uuid: user.uuid,
-                email: user.email,
-                firstName: user.first_name,
-                lastName: user.last_name
-            };
+            // const payload = {
+            //     id: user.id,
+            //     uuid: user.uuid,
+            //     email: user.email,
+            //     firstName: user.first_name,
+            //     lastName: user.last_name
+            // };
+
+            const payload = decoded;
 
             const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
                 expiresIn: '15m'
