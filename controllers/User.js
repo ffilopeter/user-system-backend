@@ -139,6 +139,8 @@ export const UpdateUser = async (req, res) => {
     res.status(200).json({ msg: 'We are in' });
 }
 
+export const VerifyUserFromLink = async (req, res) => {}
+
 export const GetUserInfo = async (req, res) => {}
 
 export const ChangePassword = async (req, res) => {}

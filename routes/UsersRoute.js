@@ -8,7 +8,8 @@ import {CreateUser,
     SuspendUser,
     DeleteUser,
     SetRole,
-    HasRole } from "../controllers/User.js";
+    HasRole,
+    VerifyUserFromLink } from "../controllers/User.js";
 import {
     VerifyJWT,
     IsAdminRole,
@@ -18,6 +19,8 @@ import {
 const router = express.Router();
 
 router.post('/register', CreateUser);
+
+router.get('/verifyUser', VerifyUserFromLink);
 
 router.post('/setrole', [VerifyJWT, IsAdminRole], SetRole);
 router.post('/hasrole', [VerifyJWT, IsAdminRole], HasRole);
