@@ -23,59 +23,17 @@ export const VerifyJWT = async (req, res, next) => {
 }
 
 export const IsAdminRole = async (req, res, next) => {
-    try {
-        const role = await Role.findOne({
-            where: {
-                name: 'admin'
-            }
-        });
-
-        if (!role) return res.status(404).json({ msg: 'Role \'admin\' does not exist.' });
-
-        const userRoles = await UserRole.findAll({
-            where: {
-                roleId: role.id,
-                userId: req.jwtPayload.id
-            }
-        });
-
-        if (!userRoles) return res.status(404).json({ msg: 'Could not access user\'s roles.' });
-
-        if (userRoles.length == 0) return res.status(403).json({ msg: 'Unauthorized access. Need admin role.' });
-
-        req.verification = 'admin';
-        next();
-    } catch (e) {
-        res.status(400).json({ msg: e.message });
-    }
+    const userRoles = req.jwtPayload.roles;
+    if (!userRoles.includes('admin')) return res.status(403).json({ msg: 'Role \'admin\' required. Access denied.' });
+    
+    next();
 }
 
 export const IsModeratorRole = async (req, res, next) => {
-    try {
-        const role = await Role.findOne({
-            where: {
-                name: 'moderator'
-            }
-        });
+    const userRoles = req.jwtPayload.roles;
+    if (!userRoles.includes('moderator')) return res.status(403).json({ msg: 'Role \'moderator\' required. Access denied.' });
 
-        if (!role) return res.status(404).json({ msg: 'Role \'moderator\' does not exist.' });
-
-        const userRoles = await UserRole.findAll({
-            where: {
-                roleId: role.id,
-                userId: req.jwtPayload.id
-            }
-        });
-
-        if (!userRoles) return res.status(404).json({ msg: 'Could not access user\'s roles.' });
-
-        if (userRoles.length == 0) return res.status(403).json({ msg: 'Unauthorized access. Need moderator role.' });
-
-        req.verification = 'moderator';
-        next();
-    } catch (e) {
-        res.status(400).json({ msg: e.message });
-    }
+    next();
 }
 
 export const IsUserRole = async (req, res, next) => {}
