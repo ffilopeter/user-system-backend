@@ -14,6 +14,7 @@ export const CreateUser = async (req, res) => {
 
         const salt = await bcrypt.genSalt();
         const hashPassword = await bcrypt.hash(password, salt);
+        const verificationCode = Math.floor(100000 + Math.random() * 900000);
 
         /**
          * Create new user or find one if already exists
@@ -27,7 +28,8 @@ export const CreateUser = async (req, res) => {
                 email: email,
                 password: hashPassword,
                 first_name: first_name,
-                last_name: last_name
+                last_name: last_name,
+                verification_code: verificationCode
             }
         });
 

@@ -40,6 +40,11 @@ const User = db.define('users', {
         defaultValue: null
     },
 
+    verification_code: {
+        type: DataTypes.STRING(6),
+        allowNull: false
+    },
+
     verified: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
