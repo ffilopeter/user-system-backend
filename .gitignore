@@ -1,0 +1,6 @@
+# Directories
+/node_modules
+
+# ENV VARIABLES
+.env
+.env_prod
