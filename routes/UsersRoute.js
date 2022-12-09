@@ -19,8 +19,8 @@ const router = express.Router();
 
 router.post('/register', CreateUser);
 
-router.post('/setrole', SetRole);
-router.post('/hasrole', HasRole);
+router.post('/setrole', [VerifyJWT, IsAdminRole], SetRole);
+router.post('/hasrole', [VerifyJWT, IsAdminRole], HasRole);
 
 // Get user information
 router.get('/profile', VerifyJWT, GetUserInfo);
