@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {User} from "../models/index.js";
+import {User, Role, UserRole} from "../models/index.js";
 import UserSession from "../models/UserSession.js";
 
 export const Login = async (req, res) => {
@@ -9,7 +9,12 @@ export const Login = async (req, res) => {
         const user = await User.findOne({
             where: {
                 email: req.body.email
-            }
+            },
+
+            include: [{
+                model: Role,
+                attributes: ['id', 'name']
+            }]
         });
 
         // If no user found
@@ -22,12 +27,16 @@ export const Login = async (req, res) => {
         // If user is suspended
         if (user.suspended === true) return res.status(403).json({ msg: 'User suspended.' });
 
+        const userRoles = [];
+        user.roles.forEach(role => userRoles.push(role.name));
+
         const payload = {
             id: user.id,
             uuid: user.uuid,
             email: user.email,
             fistName: user.first_name,
-            lastName: user.last_name
+            lastName: user.last_name,
+            roles: userRoles
         };
 
         /**
